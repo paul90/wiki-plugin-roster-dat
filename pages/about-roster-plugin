@@ -1,0 +1,37 @@
+{
+  "title": "About Roster Plugin",
+  "story": [
+  {
+    "type": "paragraph",
+    "id": "7764988b30d81458",
+    "text": "Here we describe the purpose of the plugin and include a sample."
+  },
+  {
+    "type": "roster",
+    "id": "1eae75c847715275",
+    "text": "This is text in the new plugin. You can *double-click* to edit it too."
+  }
+],
+  "journal": [
+  {
+    "type": "create",
+    "item": {
+      "title": "About Roster Plugin",
+      "story": [
+  {
+    "type": "paragraph",
+    "id": "7764988b30d81458",
+    "text": "Here we describe the purpose of the plugin and include a sample."
+  },
+  {
+    "type": "roster",
+    "id": "1eae75c847715275",
+    "text": "This is text in the new plugin. You can *double-click* to edit it too."
+  }
+]
+    },
+    "date": 1423584302000,
+    "certificate": "from mkplugin.sh"
+  }
+]
+}
