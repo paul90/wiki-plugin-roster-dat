@@ -9,5 +9,5 @@ This plugin, type: roster, extends the markup of the federated wiki.
 
 ## License
 
-MIT & GPL
+MIT
 
