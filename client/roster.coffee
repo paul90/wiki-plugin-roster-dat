@@ -1,3 +1,9 @@
+###
+ * Federated Wiki : Roster Plugin
+ *
+ * Licensed under the MIT license.
+ * https://github.com/fedwiki/wiki-plugin-roster/blob/master/LICENSE.txt
+###
 
 flag = (site) ->
   "<img class=\"remote\" src=\"//#{site}/favicon.png\" title=\"#{site}\" data-site=\"#{site}\" data-slug=\"welcome-visitors\">"
@@ -24,4 +30,3 @@ bind = ($item, item) ->
 
 window.plugins.roster = {emit, bind} if window?
 module.exports = {expand} if module?
-
