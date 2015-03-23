@@ -1,3 +1,9 @@
+###
+ * Federated Wiki : Roster Plugin
+ *
+ * Licensed under the MIT license.
+ * https://github.com/fedwiki/wiki-plugin-roster/blob/master/LICENSE.txt
+###
 # Sample Roster Accessing Code
 #
 # Any item that exploses a roster will be identifed with class "roster-source".
