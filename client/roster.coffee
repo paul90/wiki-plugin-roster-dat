@@ -50,6 +50,7 @@ emit = ($item, item) ->
       .replace /\*(.+?)\*/g, '<i>$1</i>'
       .replace /^$/, newline
       .replace /^([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(:\d+)?$/, flag
+      .replace /^localhost(:\d+)?$/, flag
       .replace /^([^<].*)$/, cat
 
   $item.addClass 'roster-source'
