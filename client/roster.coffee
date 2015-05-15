@@ -13,6 +13,14 @@
 #
 #     $('.roster-source').get(0).getRoster()
 
+open_conversation = (this_page, uri) ->
+  tuples = uri.split '/'
+  tuples.shift()
+  while tuples.length
+    site = tuples.shift()
+    slug = tuples.shift()
+    wiki.doInternalLink slug, this_page, site
+    this_page = null
 
 emit = ($item, item) ->
   roster = {all: []}
@@ -33,9 +41,9 @@ emit = ($item, item) ->
 
   newline = ->
     if lineup.length > 1
-      sites = lineup.join '/'
+      sites = ("/#{site}/welcome-visitors" for site in lineup)
       lineup = []
-      """ <a class='conversation' href= "#" data-sites="#{sites}">▶︎</a><br> """
+      """ <a class='conversation' href= "/#" data-sites="#{sites.join ''}">▶︎</a><br> """
     else
       "<br>"
 
@@ -65,10 +73,12 @@ emit = ($item, item) ->
 
 bind = ($item, item) ->
   $item.dblclick -> wiki.textEditor $item, item
-  $item.find('conversation').click (e) ->
+  $item.find('.conversation').click (e) ->
     e.preventDefault()
     e.stopPropagation()
-    console.log 'conversation sites', $(e.target).data(sites)
+    console.log 'conversation sites', $(e.target).data('sites').split('/')
+    this_page = $item.parents('.page') unless e.shiftKey
+    open_conversation this_page, $(e.target).data('sites')
 
 window.plugins.roster = {emit, bind} if window?
 module.exports = {} if module?
