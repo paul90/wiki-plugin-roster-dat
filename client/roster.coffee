@@ -1,8 +1,15 @@
+###
+ * Federated Wiki : Roster Plugin
+ *
+ * Licensed under the MIT license.
+ * https://github.com/fedwiki/wiki-plugin-roster/blob/master/LICENSE.txt
+###
+#
 # Sample Roster Accessing Code
 #
 # Any item that exploses a roster will be identifed with class "roster-source".
 # These items offer the method getRoster() for retrieving the roster object.
-# Convention has roster consumers looking left for the nearest (or all) such objects.
+# Convention has roster consumers looking left for the nearest (or all) such objects. 
 #
 #     items = $(".item:lt(#{$('.item').index(div)})")
 #     if (sources = items.filter ".roster-source").size()
@@ -79,6 +86,7 @@ bind = ($item, item) ->
     console.log 'conversation sites', $(e.target).data('sites').split('/')
     this_page = $item.parents('.page') unless e.shiftKey
     open_conversation this_page, $(e.target).data('sites')
+
 
 window.plugins.roster = {emit, bind} if window?
 module.exports = {} if module?
