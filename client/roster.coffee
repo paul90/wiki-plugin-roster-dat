@@ -9,7 +9,7 @@
 #
 # Any item that exploses a roster will be identifed with class "roster-source".
 # These items offer the method getRoster() for retrieving the roster object.
-# Convention has roster consumers looking left for the nearest (or all) such objects. 
+# Convention has roster consumers looking left for the nearest (or all) such objects.
 #
 #     items = $(".item:lt(#{$('.item').index(div)})")
 #     if (sources = items.filter ".roster-source").size()
@@ -20,14 +20,11 @@
 #
 #     $('.roster-source').get(0).getRoster()
 
-open_conversation = (this_page, uri) ->
-  tuples = uri.split '/'
-  tuples.shift()
+load_sites = (uri) ->
+  tuples = uri.split ' '
   while tuples.length
     site = tuples.shift()
-    slug = tuples.shift()
-    wiki.doInternalLink slug, this_page, site
-    this_page = null
+    wiki.neighborhoodObject.registerNeighbor site
 
 emit = ($item, item) ->
   roster = {all: []}
@@ -48,9 +45,9 @@ emit = ($item, item) ->
 
   newline = ->
     if lineup.length > 1
-      sites = ("/#{site}/welcome-visitors" for site in lineup)
+      sites = ("#{site}" for site in lineup)
       lineup = []
-      """ <a class='conversation' href= "/#" data-sites="#{sites.join ''}">▶︎</a><br> """
+      """ <a class='loadsites' href= "/#" data-sites="#{sites.join ' '}">▶︎</a><br> """
     else
       "<br>"
 
@@ -80,12 +77,11 @@ emit = ($item, item) ->
 
 bind = ($item, item) ->
   $item.dblclick -> wiki.textEditor $item, item
-  $item.find('.conversation').click (e) ->
+  $item.find('.loadsites').click (e) ->
     e.preventDefault()
     e.stopPropagation()
-    console.log 'conversation sites', $(e.target).data('sites').split('/')
-    this_page = $item.parents('.page') unless e.shiftKey
-    open_conversation this_page, $(e.target).data('sites')
+    console.log 'roster sites', $(e.target).data('sites').split(' ')
+    load_sites $(e.target).data('sites')
 
 
 window.plugins.roster = {emit, bind} if window?
