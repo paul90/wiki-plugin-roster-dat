@@ -35,12 +35,14 @@ load_sites = (uri) ->
     site = tuples.shift()
     wiki.neighborhoodObject.registerNeighbor site
 
-emit = ($item, item) ->
+parse = ($item, item) ->
   roster = {all: []}
   category = null
   lineup = []
-  more = []
   marks = {}
+  lines = []
+
+  more = item.text.split /\r?\n/
 
   flag = (site) ->
     roster.all.push site
@@ -55,10 +57,10 @@ emit = ($item, item) ->
     "<img class=\"remote\" src=\"//#{site}/favicon.png\" title=\"#{site}\" data-site=\"#{site}\" data-slug=\"welcome-visitors\">#{br}"
 
   newline = ->
-    if lineup.length > 1
+    if lineup.length
       sites = ("#{site}" for site in lineup)
       lineup = []
-      """ <a class='loadsites' href= "/#" data-sites="#{sites.join ' '}">»</a><br> """
+      """ <a class='loadsites' href= "/#" data-sites="#{sites.join ' '}" title="add these #{sites.length} sites\nto neighborhood">»</a><br> """
     else
       "<br>"
 
@@ -83,6 +85,7 @@ emit = ($item, item) ->
             break
         $item.empty()
         emit $item, item
+        bind $item, item
       "<span>loading #{siteslug}</span>"
 
   expand = (text) ->
@@ -93,19 +96,17 @@ emit = ($item, item) ->
       .replace /^INCLUDE ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, include
       .replace /^([^<].*)$/, cat
 
-  parse = (text) ->
-    lines = []
-    more = text.split /\r?\n/
-    while more.length
-      lines.push expand more.shift()
-    lines.push newline()
-    lines.join ' '
+  while more.length
+    lines.push expand more.shift()
+  lines.push newline()
+  lines.join ' '
 
+emit = ($item, item) ->
   $item.addClass 'roster-source'
   $item.get(0).getRoster = -> roster
   $item.append """
     <p style="background-color:#eee;padding:15px;">
-      #{parse item.text}
+      #{parse $item, item}
     </p>
   """
 
@@ -119,4 +120,4 @@ bind = ($item, item) ->
 
 
 window.plugins.roster = {emit, bind} if window?
-module.exports = {} if module?
+module.exports = {parse, includes} if module?
