@@ -20,6 +20,15 @@
 #
 #     $('.roster-source').get(0).getRoster()
 
+includes = {}
+
+escape = (text) ->
+  text
+    .replace /&/g, '&amp;'
+    .replace /</g, '&lt;'
+    .replace />/g, '&gt;'
+
+
 load_sites = (uri) ->
   tuples = uri.split ' '
   while tuples.length
@@ -30,6 +39,8 @@ emit = ($item, item) ->
   roster = {all: []}
   category = null
   lineup = []
+  more = []
+  marks = {}
 
   flag = (site) ->
     roster.all.push site
@@ -47,31 +58,54 @@ emit = ($item, item) ->
     if lineup.length > 1
       sites = ("#{site}" for site in lineup)
       lineup = []
-      """ <a class='loadsites' href= "/#" data-sites="#{sites.join ' '}">▶︎</a><br> """
+      """ <a class='loadsites' href= "/#" data-sites="#{sites.join ' '}">»</a><br> """
     else
       "<br>"
 
   cat = (name) ->
     category = name
+    # escape name
 
-  expand = (text)->
+  include = (line, siteslug) ->
+    if marks[siteslug]?
+      return "<span>trouble looping #{siteslug}</span>"
+    else
+      marks[siteslug] = true
+    if includes[siteslug]?
+      [].unshift.apply more, includes[siteslug]
+      ''
+    else
+      $.getJSON "http://#{siteslug}.json", (page) ->
+        includes[siteslug] = ["<span>trouble loading #{siteslug}</span>"]
+        for i in page.story
+          if i.type is 'roster'
+            includes[siteslug] = i.text.split /\r?\n/
+            break
+        $item.empty()
+        emit $item, item
+      "<span>loading #{siteslug}</span>"
+
+  expand = (text) ->
     text
-      .replace /&/g, '&amp;'
-      .replace /</g, '&lt;'
-      .replace />/g, '&gt;'
-      .replace /\*(.+?)\*/g, '<i>$1</i>'
       .replace /^$/, newline
       .replace /^([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(:\d+)?$/, flag
       .replace /^localhost(:\d+)?$/, flag
+      .replace /^INCLUDE ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, include
       .replace /^([^<].*)$/, cat
+
+  parse = (text) ->
+    lines = []
+    more = text.split /\r?\n/
+    while more.length
+      lines.push expand more.shift()
+    lines.push newline()
+    lines.join ' '
 
   $item.addClass 'roster-source'
   $item.get(0).getRoster = -> roster
-  lines = (expand(line) for line in item.text.split /\r?\n/)
-  lines.push newline()
   $item.append """
     <p style="background-color:#eee;padding:15px;">
-      #{lines.join ' '}
+      #{parse item.text}
     </p>
   """
 
