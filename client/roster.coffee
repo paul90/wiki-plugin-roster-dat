@@ -70,9 +70,7 @@ parse = ($item, item) ->
   cat = (name) ->
     category = name
 
-    # escape name
-
-  include = (line, siteslug) ->
+  includeRoster = (line, siteslug) ->
     if marks[siteslug]?
       return "<span>trouble looping #{siteslug}</span>"
     else
@@ -92,12 +90,28 @@ parse = ($item, item) ->
         bind $item, item
       "<span>loading #{siteslug}</span>"
 
+  includeReferences = (line, siteslug) ->
+    if includes[siteslug]?
+      [].unshift.apply more, includes[siteslug]
+      ''
+    else
+      $.getJSON "http://#{siteslug}.json", (page) ->
+        includes[siteslug] = []
+        for i in page.story
+          if i.type is 'reference'
+            includes[siteslug].push i.site if includes[siteslug].indexOf(i.site) < 0
+        $item.empty()
+        emit $item, item
+        bind $item, item
+      "<span>loading #{siteslug}</span>"
+
   expand = (text) ->
     text
       .replace /^$/, newline
       .replace /^([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(:\d+)?$/, flag
       .replace /^localhost(:\d+)?$/, flag
-      .replace /^INCLUDE ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, include
+      .replace /^ROSTER ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, includeRoster
+      .replace /^REFERENCES ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, includeReferences
       .replace /^([^<].*)$/, cat
 
   while more.length
