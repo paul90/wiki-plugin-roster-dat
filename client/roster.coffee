@@ -42,6 +42,10 @@ parse = ($item, item) ->
   marks = {}
   lines = []
 
+  if $item?
+    $item.addClass 'roster-source'
+    $item.get(0).getRoster = -> roster
+
   more = item.text.split /\r?\n/
 
   flag = (site) ->
@@ -102,8 +106,6 @@ parse = ($item, item) ->
   lines.join ' '
 
 emit = ($item, item) ->
-  $item.addClass 'roster-source'
-  $item.get(0).getRoster = -> roster
   $item.append """
     <p style="background-color:#eee;padding:15px;">
       #{parse $item, item}
