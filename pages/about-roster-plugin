@@ -44,17 +44,17 @@
     {
       "type": "paragraph",
       "id": "6abe048a024cdcdd",
-      "text": "A blank line will start a new line in the roster."
+      "text": "A blank markup line will start a new line in the roster."
     },
     {
       "type": "paragraph",
       "id": "df0232abf4b21d37",
-      "text": "Include a roster from a remote site with an INCLUDE line specifying the site/slug for a page containing another Roster plugin who's lines replace the include."
+      "text": "Include sites from a remote page with a ROSTER or REFERENCES line specifying the site/slug for a page containing Reference items or another Roster item with the sites to be included in this Roster."
     },
     {
       "type": "code",
       "id": "018e331b78806fa5",
-      "text": "INCLUDE ward.wiki.example.com/late-class-arrivals"
+      "text": "ROSTER ward.wiki.example.com/late-class-arrivals\nREFERENCES ward.wiki.example.com/late-class-arrivals"
     },
     {
       "type": "paragraph",
@@ -68,8 +68,8 @@
     },
     {
       "type": "paragraph",
-      "id": "fc6c3252b5da107a",
-      "text": "See [[About Activity Plugin]] for possible uses."
+      "id": "8e4ec8c938b86444",
+      "text": "See [[More About Roster Categories]]"
     }
   ],
   "journal": [
@@ -545,6 +545,52 @@
         "text": "See [[About Activity Plugin]] for possible uses."
       },
       "date": 1432966111079
+    },
+    {
+      "type": "edit",
+      "id": "df0232abf4b21d37",
+      "item": {
+        "type": "paragraph",
+        "id": "df0232abf4b21d37",
+        "text": "Include sites from a remote page with a ROSTER or REFERENCES line specifying the site/slug for a page containing Reference items or another Roster item with the sites to be included in this Roster."
+      },
+      "date": 1433104766659
+    },
+    {
+      "type": "edit",
+      "id": "018e331b78806fa5",
+      "item": {
+        "type": "code",
+        "id": "018e331b78806fa5",
+        "text": "ROSTER ward.wiki.example.com/late-class-arrivals\nREFERENCES ward.wiki.example.com/late-class-arrivals"
+      },
+      "date": 1433104801368
+    },
+    {
+      "type": "add",
+      "id": "8e4ec8c938b86444",
+      "item": {
+        "type": "paragraph",
+        "id": "8e4ec8c938b86444",
+        "text": "See [[More About Roster Categories]]"
+      },
+      "after": "fc6c3252b5da107a",
+      "date": 1433104889329
+    },
+    {
+      "type": "remove",
+      "id": "fc6c3252b5da107a",
+      "date": 1433106239317
+    },
+    {
+      "type": "edit",
+      "id": "6abe048a024cdcdd",
+      "item": {
+        "type": "paragraph",
+        "id": "6abe048a024cdcdd",
+        "text": "A blank markup line will start a new line in the roster."
+      },
+      "date": 1433106329900
     }
   ]
 }
