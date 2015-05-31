@@ -38,9 +38,30 @@ describe 'roster plugin', ->
       result = parse null, {text: 'fed.wiki.org'}
       expect(result).to.match />»<\/a><br>/
  
-  describe 'category', ->
+  describe 'category formatting', ->
 
     it 'end of line', ->
       result = parse null, {text: 'students'}
       expect(result).to.match /students *<br>/
+
+  describe 'category access', ->
+    stub =
+      addClass: (c) -> this.c = c
+      get: (n) -> this
+
+    it 'announces roster-source', ->
+      parse stub, {text: "wiki.org"}
+      expect(stub.c).to.be 'roster-source'
+
+    it 'has category all', ->
+      parse stub, {text: "wiki.org\nfoo.wiki.org"}
+      expect(stub.getRoster()).to.eql { all: [ 'wiki.org', 'foo.wiki.org' ] }
+
+    it 'allows prefix category name', ->
+      parse stub, {text: "ward\nwiki.org\nfoo.wiki.org"}
+      expect(stub.getRoster().ward).to.eql [ 'wiki.org', 'foo.wiki.org' ]
+
+    it 'allows sufix category name', ->
+      parse stub, {text: "wiki.org\nfoo.wiki.org\nward"}
+      expect(stub.getRoster().ward).to.eql [ 'wiki.org', 'foo.wiki.org' ]
 

@@ -55,21 +55,21 @@ parse = ($item, item) ->
       newline()
     else
       ''
-    if category?
-      roster[category] ||= []
-      roster[category].push site
     "<img class=\"remote\" src=\"//#{site}/favicon.png\" title=\"#{site}\" data-site=\"#{site}\" data-slug=\"welcome-visitors\">#{br}"
 
   newline = ->
     if lineup.length
-      sites = ("#{site}" for site in lineup)
-      lineup = []
+      [sites, lineup] = [lineup, []]
+      if category?
+        roster[category] ||= []
+        roster[category].push site for site in sites
       """ <a class='loadsites' href= "/#" data-sites="#{sites.join ' '}" title="add these #{sites.length} sites\nto neighborhood">»</a><br> """
     else
       "<br>"
 
   cat = (name) ->
     category = name
+
     # escape name
 
   include = (line, siteslug) ->
@@ -113,7 +113,11 @@ emit = ($item, item) ->
   """
 
 bind = ($item, item) ->
-  $item.dblclick -> wiki.textEditor $item, item
+  $item.dblclick (e) ->
+    if e.shiftKey
+      wiki.dialog "Roster Categories", "<pre>#{JSON.stringify $item.get(0).getRoster(), null, 2}</pre>"
+    else
+      wiki.textEditor $item, item
   $item.find('.loadsites').click (e) ->
     e.preventDefault()
     e.stopPropagation()
