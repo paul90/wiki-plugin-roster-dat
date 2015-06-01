@@ -20,16 +20,33 @@
 #
 #     $('.roster-source').get(0).getRoster()
 
+includes = {}
+
+escape = (text) ->
+  text
+    .replace /&/g, '&amp;'
+    .replace /</g, '&lt;'
+    .replace />/g, '&gt;'
+
+
 load_sites = (uri) ->
   tuples = uri.split ' '
   while tuples.length
     site = tuples.shift()
     wiki.neighborhoodObject.registerNeighbor site
 
-emit = ($item, item) ->
+parse = ($item, item) ->
   roster = {all: []}
   category = null
   lineup = []
+  marks = {}
+  lines = []
+
+  if $item?
+    $item.addClass 'roster-source'
+    $item.get(0).getRoster = -> roster
+
+  more = item.text.split /\r?\n/
 
   flag = (site) ->
     roster.all.push site
@@ -38,45 +55,83 @@ emit = ($item, item) ->
       newline()
     else
       ''
-    if category?
-      roster[category] ||= []
-      roster[category].push site
     "<img class=\"remote\" src=\"//#{site}/favicon.png\" title=\"#{site}\" data-site=\"#{site}\" data-slug=\"welcome-visitors\">#{br}"
 
   newline = ->
-    if lineup.length > 1
-      sites = ("#{site}" for site in lineup)
-      lineup = []
-      """ <a class='loadsites' href= "/#" data-sites="#{sites.join ' '}">▶︎</a><br> """
+    if lineup.length
+      [sites, lineup] = [lineup, []]
+      if category?
+        roster[category] ||= []
+        roster[category].push site for site in sites
+      """ <a class='loadsites' href= "/#" data-sites="#{sites.join ' '}" title="add these #{sites.length} sites\nto neighborhood">»</a><br> """
     else
       "<br>"
 
   cat = (name) ->
     category = name
 
-  expand = (text)->
+  includeRoster = (line, siteslug) ->
+    if marks[siteslug]?
+      return "<span>trouble looping #{siteslug}</span>"
+    else
+      marks[siteslug] = true
+    if includes[siteslug]?
+      [].unshift.apply more, includes[siteslug]
+      ''
+    else
+      $.getJSON "http://#{siteslug}.json", (page) ->
+        includes[siteslug] = ["<span>trouble loading #{siteslug}</span>"]
+        for i in page.story
+          if i.type is 'roster'
+            includes[siteslug] = i.text.split /\r?\n/
+            break
+        $item.empty()
+        emit $item, item
+        bind $item, item
+      "<span>loading #{siteslug}</span>"
+
+  includeReferences = (line, siteslug) ->
+    if includes[siteslug]?
+      [].unshift.apply more, includes[siteslug]
+      ''
+    else
+      $.getJSON "http://#{siteslug}.json", (page) ->
+        includes[siteslug] = []
+        for i in page.story
+          if i.type is 'reference'
+            includes[siteslug].push i.site if includes[siteslug].indexOf(i.site) < 0
+        $item.empty()
+        emit $item, item
+        bind $item, item
+      "<span>loading #{siteslug}</span>"
+
+  expand = (text) ->
     text
-      .replace /&/g, '&amp;'
-      .replace /</g, '&lt;'
-      .replace />/g, '&gt;'
-      .replace /\*(.+?)\*/g, '<i>$1</i>'
       .replace /^$/, newline
       .replace /^([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(:\d+)?$/, flag
       .replace /^localhost(:\d+)?$/, flag
+      .replace /^ROSTER ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, includeRoster
+      .replace /^REFERENCES ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, includeReferences
       .replace /^([^<].*)$/, cat
 
-  $item.addClass 'roster-source'
-  $item.get(0).getRoster = -> roster
-  lines = (expand(line) for line in item.text.split /\r?\n/)
+  while more.length
+    lines.push expand more.shift()
   lines.push newline()
+  lines.join ' '
+
+emit = ($item, item) ->
   $item.append """
     <p style="background-color:#eee;padding:15px;">
-      #{lines.join ' '}
+      #{parse $item, item}
     </p>
   """
 
 bind = ($item, item) ->
-  $item.dblclick -> wiki.textEditor $item, item
+  $item.dblclick (e) ->
+    if e.shiftKey
+      wiki.dialog "Roster Categories", "<pre>#{JSON.stringify $item.get(0).getRoster(), null, 2}</pre>"
+    else
+      wiki.textEditor $item, item
   $item.find('.loadsites').click (e) ->
     e.preventDefault()
     e.stopPropagation()
@@ -85,4 +140,4 @@ bind = ($item, item) ->
 
 
 window.plugins.roster = {emit, bind} if window?
-module.exports = {} if module?
+module.exports = {parse, includes} if module?
