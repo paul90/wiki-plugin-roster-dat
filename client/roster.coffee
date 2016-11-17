@@ -79,7 +79,7 @@ parse = ($item, item) ->
       [].unshift.apply more, includes[siteslug]
       ''
     else
-      $.getJSON "http://#{siteslug}.json", (page) ->
+      $.getJSON "//#{siteslug}.json", (page) ->
         includes[siteslug] = ["<span>trouble loading #{siteslug}</span>"]
         for i in page.story
           if i.type is 'roster'
@@ -95,7 +95,7 @@ parse = ($item, item) ->
       [].unshift.apply more, includes[siteslug]
       ''
     else
-      $.getJSON "http://#{siteslug}.json", (page) ->
+      $.getJSON "//#{siteslug}.json", (page) ->
         includes[siteslug] = []
         for i in page.story
           if i.type is 'reference'
