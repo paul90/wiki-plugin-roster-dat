@@ -98,15 +98,18 @@ parse = ($item, item) ->
       ''
     else
       [site, slug] = siteslug.split('/')
-      wiki.site(site).get "#{slug}.json", (page) ->
+      wiki.site(site).get "#{slug}.json", (error, page) ->
       # $.getJSON "//#{siteslug}.json", (page) ->
-        includes[siteslug] = []
-        for i in page.story
-          if i.type is 'reference'
-            includes[siteslug].push i.site if includes[siteslug].indexOf(i.site) < 0
-        $item.empty()
-        emit $item, item
-        bind $item, item
+        if error
+          console.log "unable to get #{siteslug}"
+        else
+          includes[siteslug] = []
+          for i in page.story
+            if i.type is 'reference'
+              includes[siteslug].push i.site if includes[siteslug].indexOf(i.site) < 0
+          $item.empty()
+          emit $item, item
+          bind $item, item
       "<span>loading #{siteslug}</span>"
 
   expand = (text) ->
