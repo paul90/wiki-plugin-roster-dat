@@ -4,6 +4,14 @@
 {parse, includes} = require '../client/roster'
 expect = require 'expect.js'
 
+# mock wiki.site(site).flag()
+wiki = {}
+wiki.site = (site) -> {
+  flag: -> "//#{site}/favicon.png"
+}
+# and make wiki global
+global.wiki = wiki
+
 describe 'roster plugin', ->
 
   describe 'site markup', ->
@@ -11,33 +19,33 @@ describe 'roster plugin', ->
     it 'makes image', ->
       result = parse null, {text: 'fed.wiki.org'}
       expect(result).to.match /<img class="remote" src="\/\/fed.wiki.org\/favicon.png"/
- 
+
     it 'has title', ->
       result = parse null, {text: 'fed.wiki.org'}
       expect(result).to.match /title="fed.wiki.org"/
- 
+
     it 'has site data', ->
       result = parse null, {text: 'fed.wiki.org'}
       expect(result).to.match /data-site="fed.wiki.org"/
- 
+
     it 'has slug data', ->
       result = parse null, {text: 'fed.wiki.org'}
       expect(result).to.match /data-slug="welcome-visitors"/
- 
+
   describe 'end of line markup', ->
 
     it 'has anchor', ->
       result = parse null, {text: 'fed.wiki.org'}
       expect(result).to.match /<a class='loadsites' href= "\/#"/
- 
+
     it 'has title', ->
       result = parse null, {text: 'fed.wiki.org'}
       expect(result).to.match /title="add these 1 sites\nto neighborhood"/
- 
+
     it 'has » at end of line', ->
       result = parse null, {text: 'fed.wiki.org'}
       expect(result).to.match />»<\/a><br>/
- 
+
   describe 'category formatting', ->
 
     it 'end of line', ->
@@ -64,4 +72,3 @@ describe 'roster plugin', ->
     it 'allows sufix category name', ->
       parse stub, {text: "wiki.org\nfoo.wiki.org\nward"}
       expect(stub.getRoster().ward).to.eql [ 'wiki.org', 'foo.wiki.org' ]
-
