@@ -80,16 +80,19 @@ parse = ($item, item) ->
       ''
     else
       [site, slug] = siteslug.split('/')
-      wiki.site(site).get "#{slug}.json", (page) ->
+      wiki.site(site).get "#{slug}.json", (error, page) ->
       # $.getJSON "//#{siteslug}.json", (page) ->
-        includes[siteslug] = ["<span>trouble loading #{siteslug}</span>"]
-        for i in page.story
-          if i.type is 'roster'
-            includes[siteslug] = i.text.split /\r?\n/
-            break
-        $item.empty()
-        emit $item, item
-        bind $item, item
+        if error
+          console.log "unable to get #{siteslug}"
+        else
+          includes[siteslug] = ["<span>trouble loading #{siteslug}</span>"]
+          for i in page.story
+            if i.type is 'roster'
+              includes[siteslug] = i.text.split /\r?\n/
+              break
+          $item.empty()
+          emit $item, item
+          bind $item, item
       "<span>loading #{siteslug}</span>"
 
   includeReferences = (line, siteslug) ->
