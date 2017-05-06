@@ -1,9 +1,6 @@
 {
   "name": "wiki-plugin-roster",
   "version": "0.2.0",
-  "publishConfig": {
-    "tag": "next"
-  },
   "description": "Federated Wiki - Roster Plugin",
   "keywords": [
     "roster",
