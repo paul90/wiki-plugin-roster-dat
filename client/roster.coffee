@@ -119,6 +119,7 @@ parse = ($item, item) ->
     text
       .replace /^$/, newline
       .replace /^([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(:\d+)?$/, flag
+      .replace /^([a-zA-Z0-9]{64})$/, flag
       .replace /^localhost(:\d+)?$/, flag
       .replace /^ROSTER ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, includeRoster
       .replace /^REFERENCES ([A-Za-z0-9.-:]+\/[a-z0-9-]+)$/, includeReferences
